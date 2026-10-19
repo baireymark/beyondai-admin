@@ -1,0 +1,185 @@
+// Data model for the enquiry API and admin dashboard.
+// See Planning/README.md section 9. The connection URL lives in prisma.config.ts.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  WON
+  LOST
+}
+
+enum Topic {
+  BOOK_CONSULTATION
+  PRODUCT_DEMO
+  AI_EDUCATION
+  CORPORATE_TRAINING
+  PARTNERSHIP
+  TECHNICAL_SUPPORT
+  OTHER
+}
+
+enum Role {
+  STAFF
+  ADMIN
+}
+
+enum LeadAction {
+  created
+  status_changed
+  owner_changed
+  note_added
+  deleted
+  restored
+}
+
+enum PrivacyAction {
+  EXPORT
+  ERASURE
+  RETENTION_PURGE
+}
+
+model Lead {
+  id                String     @id @default(cuid())
+  fullName          String     @db.VarChar(120)
+  workEmail         String     @db.VarChar(254)
+  organization      String?    @db.VarChar(160)
+  topic             Topic
+  /// Values from INTEREST_AREAS in features/leads/options.ts
+  interestAreas     String[]
+  /// Stored in UTC, displayed in Asia/Manila
+  preferredCallTime DateTime?  @db.Timestamptz(3)
+  message           String     @db.Text
+  consentAt         DateTime   @db.Timestamptz(3)
+  consentVersion    String     @db.VarChar(32)
+  status            LeadStatus @default(NEW)
+  ownerId           String?
+  owner             User?      @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  replyDueAt        DateTime   @db.Timestamptz(3)
+  firstContactedAt  DateTime?  @db.Timestamptz(3)
+  sourcePage        String?    @db.VarChar(200)
+  utmSource         String?    @db.VarChar(100)
+  utmMedium         String?    @db.VarChar(100)
+  utmCampaign       String?    @db.VarChar(100)
+  createdAt         DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime   @updatedAt @db.Timestamptz(3)
+  /// Soft delete. Deleted leads are hidden from staff and cannot be edited.
+  deletedAt         DateTime?  @db.Timestamptz(3)
+
+  notes    LeadNote[]
+  activity LeadActivity[]
+
+  @@index([workEmail])
+  @@index([topic])
+  @@index([status, createdAt])
+  @@index([ownerId])
+  @@index([replyDueAt])
+}
+
+model LeadNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  body      String   @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([leadId, createdAt])
+}
+
+/// Append-only. A database trigger rejects UPDATE; rows go away only when
+/// their lead is permanently deleted (retention or a data subject request).
+model LeadActivity {
+  id        String     @id @default(cuid())
+  leadId    String
+  lead      Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  /// Null when the system acted, for example when a visitor created the lead.
+  actorId   String?
+  actor     User?      @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  action    LeadAction
+  /// Before and after values, for example { "from": "NEW", "to": "CONTACTED" }
+  detail    Json?
+  createdAt DateTime   @default(now()) @db.Timestamptz(3)
+
+  @@index([leadId, createdAt])
+}
+
+/// Staff accounts. Access is invite-only: an admin adds the email first.
+/// Users are deactivated, never deleted, so the activity log keeps its actors.
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  emailVerified DateTime? @db.Timestamptz(3)
+  image         String?
+  role          Role      @default(STAFF)
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  lastSignInAt  DateTime? @db.Timestamptz(3)
+
+  accounts   Account[]
+  sessions   Session[]
+  ownedLeads Lead[]         @relation("LeadOwner")
+  notes      LeadNote[]
+  activity   LeadActivity[]
+}
+
+// Auth.js tables (database sessions and email sign-in links).
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime @updatedAt @db.Timestamptz(3)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime @db.Timestamptz(3)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime @db.Timestamptz(3)
+
+  @@id([identifier, token])
+}
+
+/// Record of privacy operations. Holds counts and the acting admin only,
+/// never the personal data that was exported or removed.
+model PrivacyLog {
+  id          String        @id @default(cuid())
+  action      PrivacyAction
+  recordCount Int
+  actorId     String?
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+}

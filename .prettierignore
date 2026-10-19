@@ -1,0 +1,13 @@
+.next
+out
+build
+coverage
+storybook-static
+playwright-report
+test-results
+.lighthouseci
+package-lock.json
+next-env.d.ts
+generated
+Planning
+tests/e2e/.auth
