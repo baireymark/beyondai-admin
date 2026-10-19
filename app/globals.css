@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens. Components use these through Tailwind utilities
+ * (bg-surface, text-fg, border-border, ...) so a theme change happens here only.
+ */
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-bg: oklch(98.5% 0.002 247);
+  --color-surface: oklch(100% 0 0);
+  --color-fg: oklch(21% 0.034 264);
+  --color-fg-muted: oklch(44.6% 0.03 257);
+  --color-border: oklch(87.2% 0.01 258);
+  --color-primary: oklch(48.8% 0.217 264);
+  --color-primary-fg: oklch(100% 0 0);
+  --color-danger: oklch(50.5% 0.213 27.5);
+  /* Status tones stay at or above 4.5:1 as badge text on their own 10% tint,
+     including inside a highlighted overdue row. */
+  --color-success: oklch(47% 0.14 150);
+  --color-warning: oklch(50% 0.12 65);
+  --color-info: oklch(48% 0.16 245);
+  /* Data marks. Validated with the dataviz palette checks against each surface. */
+  --color-chart: oklch(48.8% 0.217 264);
+
+  --radius-card: 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: oklch(14.5% 0.02 264);
+    --color-surface: oklch(21% 0.034 264);
+    --color-fg: oklch(96.7% 0.003 265);
+    --color-fg-muted: oklch(70.7% 0.022 261);
+    --color-border: oklch(37.3% 0.034 260);
+    --color-primary: oklch(70.7% 0.165 254);
+    --color-primary-fg: oklch(14.5% 0.02 264);
+    --color-danger: oklch(70.4% 0.191 22);
+    --color-success: oklch(72.3% 0.192 150);
+    --color-warning: oklch(80% 0.15 80);
+    --color-info: oklch(75% 0.13 245);
+    --color-chart: oklch(65% 0.17 256);
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light dark;
+  }
+
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}

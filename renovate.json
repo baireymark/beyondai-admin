@@ -1,0 +1,64 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests", "docker:pinDigests"],
+  "schedule": ["before 6am on monday"],
+  "timezone": "Asia/Manila",
+  "minimumReleaseAge": "14 days",
+  "rangeStrategy": "pin",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "groupName": "Next.js and React",
+      "matchPackageNames": [
+        "next",
+        "@next/env",
+        "eslint-config-next",
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ]
+    },
+    {
+      "groupName": "Prisma",
+      "matchPackageNames": ["prisma", "@prisma/**"]
+    },
+    {
+      "groupName": "Auth.js",
+      "matchPackageNames": ["next-auth", "@auth/**", "nodemailer", "@types/nodemailer"],
+      "description": "nodemailer is pinned through package.json overrides; see docs/adr/0004-admin-app-decisions.md."
+    },
+    {
+      "groupName": "Testing tools",
+      "matchPackageNames": [
+        "vitest",
+        "@vitest/**",
+        "@testing-library/**",
+        "msw",
+        "jsdom",
+        "@playwright/test",
+        "playwright-core",
+        "@axe-core/playwright"
+      ],
+      "description": "playwright-core is pinned in package.json overrides; keep it in step with @playwright/test."
+    },
+    {
+      "groupName": "Storybook",
+      "matchPackageNames": ["storybook", "@storybook/**", "eslint-plugin-storybook"]
+    },
+    {
+      "groupName": "Lint and format",
+      "matchPackageNames": [
+        "eslint",
+        "prettier",
+        "prettier-plugin-tailwindcss",
+        "@commitlint/**",
+        "husky",
+        "lint-staged"
+      ]
+    }
+  ]
+}
