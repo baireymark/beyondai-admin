@@ -47,6 +47,8 @@ export function LogoMark({ className }: { className?: string }) {
 /**
  * Mark plus "BeyondAi" wordmark, with an optional small label (e.g. "Admin")
  * set under the wordmark. Decorative: give the parent an accessible name.
+ * The wordmark is 1.5em so it stays large text (24px at the 16px root): the
+ * brand orange on "Ai" only meets the 3:1 large-text contrast minimum.
  */
 export function Logo({
   className,
@@ -61,7 +63,7 @@ export function Logo({
     <span className={cn('inline-flex items-center gap-2', className)}>
       <LogoMark className={cn('size-8', markClassName)} />
       <span aria-hidden="true" className="flex flex-col">
-        <span className="font-brand text-[1.375em] leading-none font-semibold tracking-tight">
+        <span className="font-brand text-[1.5em] leading-none font-semibold tracking-tight">
           Beyond<span className="text-brand">Ai</span>
         </span>
         {label ? (

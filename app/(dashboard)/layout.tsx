@@ -54,7 +54,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             aria-label={publicEnv.NEXT_PUBLIC_APP_NAME}
             className="inline-flex rounded-lg"
           >
-            <Logo label="Admin" markClassName="size-9" />
+            <Logo label="Admin" markClassName="size-10" />
           </Link>
         </div>
         <Suspense fallback={null}>
