@@ -29,9 +29,26 @@ describe('parseServerEnv', () => {
     expect(() => parseServerEnv({ ...valid, AUTH_SECRET: 'short' })).toThrow(/AUTH_SECRET/);
   });
 
-  it('requires AUTH_URL and EMAIL_SERVER in production', () => {
+  it('requires AUTH_URL and EMAIL_SERVER_HOST in production', () => {
     expect(() => parseServerEnv({ ...valid, NODE_ENV: 'production' })).toThrow(
-      /AUTH_URL[\s\S]*EMAIL_SERVER/,
+      /AUTH_URL[\s\S]*EMAIL_SERVER_HOST/,
+    );
+  });
+
+  it('defaults the SMTP port to 587 and parses a set port as a number', () => {
+    expect(parseServerEnv(valid).EMAIL_SERVER_PORT).toBe(587);
+    expect(parseServerEnv({ ...valid, EMAIL_SERVER_PORT: '465' }).EMAIL_SERVER_PORT).toBe(465);
+  });
+
+  it('rejects an SMTP port that is not a valid port number', () => {
+    expect(() => parseServerEnv({ ...valid, EMAIL_SERVER_PORT: 'smtp' })).toThrow(
+      /EMAIL_SERVER_PORT/,
+    );
+  });
+
+  it('requires both SMTP credentials or neither', () => {
+    expect(() => parseServerEnv({ ...valid, EMAIL_SERVER_USER: 'apikey' })).toThrow(
+      /EMAIL_SERVER_PASSWORD/,
     );
   });
 

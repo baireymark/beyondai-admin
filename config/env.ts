@@ -35,13 +35,16 @@ const serverSchema = z
       .regex(/^[\w.-]{1,32}$/, 'Use up to 32 letters, digits, dots, dashes, or underscores'),
     UPSTASH_REDIS_REST_URL: z.url().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
-    EMAIL_SERVER: z.string().min(1).optional(),
+    EMAIL_SERVER_HOST: z.string().min(1).optional(),
+    EMAIL_SERVER_PORT: z.coerce.number().int().min(1).max(65535).default(587),
+    EMAIL_SERVER_USER: z.string().min(1).optional(),
+    EMAIL_SERVER_PASSWORD: z.string().min(1).optional(),
     EMAIL_FROM: z.string().min(3).default('BeyondAi Admin <no-reply@beyondai.ph>'),
     CRON_SECRET: z.string().min(16).optional(),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV === 'production') {
-      for (const key of ['AUTH_URL', 'EMAIL_SERVER'] as const) {
+      for (const key of ['AUTH_URL', 'EMAIL_SERVER_HOST'] as const) {
         if (!env[key])
           ctx.addIssue({ code: 'custom', path: [key], message: 'Required in production' });
       }
@@ -51,6 +54,13 @@ const serverSchema = z
         code: 'custom',
         path: ['UPSTASH_REDIS_REST_TOKEN'],
         message: 'Set both UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN, or neither',
+      });
+    }
+    if (Boolean(env.EMAIL_SERVER_USER) !== Boolean(env.EMAIL_SERVER_PASSWORD)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['EMAIL_SERVER_PASSWORD'],
+        message: 'Set both EMAIL_SERVER_USER and EMAIL_SERVER_PASSWORD, or neither',
       });
     }
   });

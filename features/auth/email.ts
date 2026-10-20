@@ -25,8 +25,8 @@ export function signInEmail(url: string, appName: string) {
 
 /**
  * Email sign-in links sent over SMTP (any provider: Google Workspace relay,
- * Resend, SES, Postmark). Without EMAIL_SERVER in development, the link is
- * printed to the terminal instead so local sign-in works offline.
+ * Resend, SES, Postmark). Without EMAIL_SERVER_HOST in development, the link
+ * is printed to the terminal instead so local sign-in works offline.
  */
 export function emailProvider(env: ServerEnv, appName: string): EmailConfig {
   return {
@@ -37,12 +37,21 @@ export function emailProvider(env: ServerEnv, appName: string): EmailConfig {
     maxAge: SIGN_IN_LINK_MINUTES * 60,
     async sendVerificationRequest({ identifier, url, provider }) {
       const message = signInEmail(url, appName);
-      if (!env.EMAIL_SERVER) {
-        if (env.NODE_ENV === 'production') throw new Error('EMAIL_SERVER is not configured');
+      if (!env.EMAIL_SERVER_HOST) {
+        if (env.NODE_ENV === 'production') throw new Error('EMAIL_SERVER_HOST is not configured');
         console.warn(`\n[dev] Sign-in link (open it in this browser):\n${url}\n`);
         return;
       }
-      const result = await createTransport(env.EMAIL_SERVER).sendMail({
+      const transport = createTransport({
+        host: env.EMAIL_SERVER_HOST,
+        port: env.EMAIL_SERVER_PORT,
+        // Port 465 uses implicit TLS; other ports upgrade with STARTTLS.
+        secure: env.EMAIL_SERVER_PORT === 465,
+        auth: env.EMAIL_SERVER_USER
+          ? { user: env.EMAIL_SERVER_USER, pass: env.EMAIL_SERVER_PASSWORD }
+          : undefined,
+      });
+      const result = await transport.sendMail({
         to: identifier,
         from: provider.from,
         ...message,

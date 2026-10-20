@@ -50,7 +50,8 @@ export default defineConfig({
         env: {
           DATABASE_URL: process.env.DATABASE_URL ?? '',
           // Production requires an SMTP server; the E2E tests never send email.
-          EMAIL_SERVER: process.env.EMAIL_SERVER ?? 'smtp://localhost:2525',
+          EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST ?? 'localhost',
+          EMAIL_SERVER_PORT: process.env.EMAIL_SERVER_PORT ?? '2525',
           CORS_ALLOWED_ORIGINS: process.env.E2E_PUBLIC_ORIGIN ?? 'http://localhost:3000',
         },
       },

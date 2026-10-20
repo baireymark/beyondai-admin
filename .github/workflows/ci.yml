@@ -23,7 +23,8 @@ env:
   # Cloudflare's test secret: every token passes.
   TURNSTILE_SECRET_KEY: 1x0000000000000000000000000000000AA
   CONSENT_NOTICE_VERSION: '2026-10'
-  EMAIL_SERVER: smtp://localhost:2525
+  EMAIL_SERVER_HOST: localhost
+  EMAIL_SERVER_PORT: '2525'
 
 jobs:
   quality:

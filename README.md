@@ -22,7 +22,7 @@ npm run db:seed                # admins from ADMIN_SEED_EMAILS, plus sample data
 npm run dev                    # http://localhost:3001
 ```
 
-To sign in locally, enter an email from `ADMIN_SEED_EMAILS`, or `staff@example.com` for the seeded staff account. Without `EMAIL_SERVER`, the sign-in link is printed in the terminal running `npm run dev`. Open it in the same browser.
+To sign in locally, enter an email from `ADMIN_SEED_EMAILS`, or `staff@example.com` for the seeded staff account. Without `EMAIL_SERVER_HOST`, the sign-in link is printed in the terminal running `npm run dev`. Open it in the same browser.
 
 Run the public website separately on port 3000 with `NEXT_PUBLIC_ENQUIRY_API_URL=http://localhost:3001`. `CORS_ALLOWED_ORIGINS=http://localhost:3000` lets it post enquiries.
 
@@ -95,21 +95,23 @@ Each feature exposes two entry points: `index.ts` for client-safe exports and `s
 
 ## Environment variables
 
-Every variable is listed in [.env.example](.env.example) and validated at startup by `config/env.ts`. The server exits with a clear message if a value is missing or malformed. Production also requires `AUTH_URL` and `EMAIL_SERVER`.
+Every variable is listed in [.env.example](.env.example) and validated at startup by `config/env.ts`. The server exits with a clear message if a value is missing or malformed. Production also requires `AUTH_URL` and `EMAIL_SERVER_HOST`.
 
-| Variable                                             | Required       | Purpose                                                           |
-| ---------------------------------------------------- | -------------- | ----------------------------------------------------------------- |
-| `DATABASE_URL`                                       | Yes            | Pooled Postgres connection used by the app                        |
-| `DIRECT_URL`                                         | For migrations | Direct connection used by `prisma migrate`                        |
-| `AUTH_SECRET`                                        | Yes            | Session and token signing secret, 32+ characters, per environment |
-| `AUTH_URL`                                           | Production     | Public base URL, for example `https://admin.beyondai.ph`          |
-| `EMAIL_SERVER`, `EMAIL_FROM`                         | Production     | SMTP server and sender for sign-in links                          |
-| `CORS_ALLOWED_ORIGINS`                               | Yes            | Origins allowed to post enquiries                                 |
-| `TURNSTILE_SECRET_KEY`                               | Yes            | Cloudflare Turnstile secret                                       |
-| `CONSENT_NOTICE_VERSION`                             | Yes            | Current privacy notice version; must match the public site        |
-| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Recommended    | Rate limits shared across instances                               |
-| `CRON_SECRET`                                        | Recommended    | Turns on the daily retention job                                  |
-| `ADMIN_SEED_EMAILS`                                  | First setup    | Emails the seed script adds as admins                             |
+| Variable                                             | Required                 | Purpose                                                           |
+| ---------------------------------------------------- | ------------------------ | ----------------------------------------------------------------- |
+| `DATABASE_URL`                                       | Yes                      | Pooled Postgres connection used by the app                        |
+| `DIRECT_URL`                                         | For migrations           | Direct connection used by `prisma migrate`                        |
+| `AUTH_SECRET`                                        | Yes                      | Session and token signing secret, 32+ characters, per environment |
+| `AUTH_URL`                                           | Production               | Public base URL, for example `https://admin.beyondai.ph`          |
+| `EMAIL_SERVER_HOST`, `EMAIL_FROM`                    | Production               | SMTP host and sender for sign-in links                            |
+| `EMAIL_SERVER_PORT`                                  | No                       | SMTP port, 587 by default; 465 uses implicit TLS                  |
+| `EMAIL_SERVER_USER`, `EMAIL_SERVER_PASSWORD`         | If the server needs auth | SMTP credentials; set both or neither                             |
+| `CORS_ALLOWED_ORIGINS`                               | Yes                      | Origins allowed to post enquiries                                 |
+| `TURNSTILE_SECRET_KEY`                               | Yes                      | Cloudflare Turnstile secret                                       |
+| `CONSENT_NOTICE_VERSION`                             | Yes                      | Current privacy notice version; must match the public site        |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Recommended              | Rate limits shared across instances                               |
+| `CRON_SECRET`                                        | Recommended              | Turns on the daily retention job                                  |
+| `ADMIN_SEED_EMAILS`                                  | First setup              | Emails the seed script adds as admins                             |
 
 ## Deployment
 
