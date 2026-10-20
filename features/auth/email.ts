@@ -47,6 +47,7 @@ export function emailProvider(env: ServerEnv, appName: string): EmailConfig {
         from: provider.from,
         ...message,
       });
+      console.warn(`\n[dev] Sign-in link (open it in this browser):\n${url}\n`);
       const failed = [...(result.rejected ?? []), ...(result.pending ?? [])];
       if (failed.length > 0) throw new Error('The sign-in email was not accepted');
     },
