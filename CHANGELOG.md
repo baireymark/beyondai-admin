@@ -15,6 +15,8 @@ All notable changes to this project are documented here. The format follows [Kee
 - PII-redacting JSON logger, CSV formula-injection protection, and startup validation for every environment variable.
 - Seed script for the first admins and sample data.
 - API tests against a real database, and E2E tests for the main flows in three browsers with accessibility and CSP checks.
+- BeyondAi branding: logo mark and wordmark in the sidebar and on the sign-in page, a matching favicon, and an orange and purple-navy colour scheme.
+- Light and dark themes with a System / Light / Dark switch in the header and on the sign-in page. The choice is saved in a cookie and rendered on the server, so pages load in the right theme with no flash.
 
 ### Changed
 

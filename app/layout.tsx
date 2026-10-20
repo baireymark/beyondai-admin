@@ -2,11 +2,21 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
+import { Montserrat } from 'next/font/google';
+import { cookies } from 'next/headers';
 import { connection } from 'next/server';
 
 import { publicEnv } from '@/config/env';
+import { parseTheme, THEME_COOKIE, themeAttribute } from '@/shared/lib/theme';
 import { Providers } from './providers';
 import './globals.css';
+
+// The BeyondAi wordmark face. Self-hosted by next/font, so the CSP stays 'self'.
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['600'],
+  variable: '--font-montserrat',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -23,9 +33,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // The nonce-based CSP in proxy.ts needs a fresh nonce per request, so every
   // page renders dynamically. See docs/adr/0002-nonce-csp.md for the trade-off.
   await connection();
+  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
 
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html
+      lang="en"
+      data-theme={themeAttribute(theme)}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${montserrat.variable}`}
+    >
       <body>
         <a
           href="#main"
@@ -33,7 +48,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         >
           Skip to content
         </a>
-        <Providers>{children}</Providers>
+        <Providers theme={theme}>{children}</Providers>
       </body>
     </html>
   );

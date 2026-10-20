@@ -6,7 +6,7 @@ import { SignOutButton } from '@/features/auth';
 import { requireUser } from '@/features/auth/server';
 import { HeaderCounts } from '@/features/leads';
 import { getHeaderCounts } from '@/features/leads/server';
-import { Badge, NavLink } from '@/shared/ui';
+import { Badge, Logo, NavLink, ThemeToggle } from '@/shared/ui';
 
 function Navigation({ isAdmin }: { isAdmin: boolean }) {
   return (
@@ -49,8 +49,12 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     <div className="min-h-dvh md:grid md:grid-cols-[14rem_minmax(0,1fr)]">
       <aside className="border-b border-border bg-surface md:min-h-dvh md:border-r md:border-b-0">
         <div className="px-6 py-4">
-          <Link href="/" className="font-semibold">
-            {publicEnv.NEXT_PUBLIC_APP_NAME}
+          <Link
+            href="/"
+            aria-label={publicEnv.NEXT_PUBLIC_APP_NAME}
+            className="inline-flex rounded-lg"
+          >
+            <Logo label="Admin" markClassName="size-9" />
           </Link>
         </div>
         <Suspense fallback={null}>
@@ -63,6 +67,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           <div className="flex items-center gap-3 text-sm">
             <span className="hidden sm:inline">{user.name ?? user.email}</span>
             <Badge tone={isAdmin ? 'primary' : 'neutral'}>{isAdmin ? 'Admin' : 'Staff'}</Badge>
+            <ThemeToggle />
             <SignOutButton />
           </div>
         </header>

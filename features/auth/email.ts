@@ -17,7 +17,7 @@ export function signInEmail(url: string, appName: string) {
   const text = `Use this link to sign in to ${appName}:\n\n${url}\n\nThe link expires in ${SIGN_IN_LINK_MINUTES} minutes and works once. If you did not ask for it, ignore this email.\n`;
   const html = `<!doctype html><html><body style="font-family:system-ui,sans-serif;line-height:1.5">
 <p>Use the button below to sign in to ${escapeHtml(appName)}.</p>
-<p><a href="${escapeHtml(url)}" style="display:inline-block;padding:10px 16px;border-radius:8px;background:#2a49d6;color:#fff;text-decoration:none">Sign in</a></p>
+<p><a href="${escapeHtml(url)}" style="display:inline-block;padding:10px 16px;border-radius:8px;background:#b83300;color:#fff;text-decoration:none">Sign in</a></p>
 <p>The link expires in ${SIGN_IN_LINK_MINUTES} minutes and works once. If you did not ask for it, ignore this email.</p>
 </body></html>`;
   return { subject, text, html };

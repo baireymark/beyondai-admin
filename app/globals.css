@@ -3,45 +3,77 @@
 /*
  * Design tokens. Components use these through Tailwind utilities
  * (bg-surface, text-fg, border-border, ...) so a theme change happens here only.
+ *
+ * BeyondAi brand: orange primary, deep purple-navy neutrals, near-black in
+ * dark mode. Text tones stay at or above 4.5:1 on their surfaces, including
+ * as badge text on their own 10% tint inside a highlighted overdue row.
  */
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-brand: var(--font-montserrat), var(--font-geist-sans), ui-sans-serif, sans-serif;
 
-  --color-bg: oklch(98.5% 0.002 247);
+  --color-bg: oklch(98.4% 0.004 75);
   --color-surface: oklch(100% 0 0);
-  --color-fg: oklch(21% 0.034 264);
-  --color-fg-muted: oklch(44.6% 0.03 257);
-  --color-border: oklch(87.2% 0.01 258);
-  --color-primary: oklch(48.8% 0.217 264);
+  --color-fg: oklch(20% 0.035 295);
+  --color-fg-muted: oklch(46% 0.03 295);
+  --color-border: oklch(89% 0.012 295);
+  --color-primary: oklch(52% 0.18 40);
   --color-primary-fg: oklch(100% 0 0);
-  --color-danger: oklch(50.5% 0.213 27.5);
-  /* Status tones stay at or above 4.5:1 as badge text on their own 10% tint,
-     including inside a highlighted overdue row. */
+  /* The logo orange. Large text and decoration only: 3.5:1 on white. */
+  --color-brand: oklch(65% 0.2 40);
+  --color-danger: oklch(50% 0.2 18);
   --color-success: oklch(47% 0.14 150);
-  --color-warning: oklch(50% 0.12 65);
-  --color-info: oklch(48% 0.16 245);
+  --color-warning: oklch(50% 0.12 75);
+  --color-info: oklch(48% 0.16 250);
   /* Data marks. Validated with the dataviz palette checks against each surface. */
-  --color-chart: oklch(48.8% 0.217 264);
+  --color-chart: oklch(52% 0.18 40);
 
   --radius-card: 0.75rem;
 }
 
+/*
+ * Dark tokens apply when the OS prefers dark and the user has not picked light,
+ * or when the user picked dark. The data-theme attribute on <html> comes from
+ * the theme cookie (shared/lib/theme.ts). The two blocks must stay identical.
+ */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: oklch(14.5% 0.02 264);
-    --color-surface: oklch(21% 0.034 264);
-    --color-fg: oklch(96.7% 0.003 265);
-    --color-fg-muted: oklch(70.7% 0.022 261);
-    --color-border: oklch(37.3% 0.034 260);
-    --color-primary: oklch(70.7% 0.165 254);
-    --color-primary-fg: oklch(14.5% 0.02 264);
-    --color-danger: oklch(70.4% 0.191 22);
-    --color-success: oklch(72.3% 0.192 150);
-    --color-warning: oklch(80% 0.15 80);
+  :root:not([data-theme='light']) {
+    --color-bg: oklch(13% 0.014 295);
+    --color-surface: oklch(18.5% 0.024 295);
+    --color-fg: oklch(96.5% 0.005 295);
+    --color-fg-muted: oklch(72% 0.02 295);
+    --color-border: oklch(31% 0.03 295);
+    --color-primary: oklch(71% 0.18 46);
+    --color-primary-fg: oklch(14% 0.02 295);
+    --color-brand: oklch(71% 0.18 46);
+    --color-danger: oklch(70% 0.18 18);
+    --color-success: oklch(72% 0.17 150);
+    --color-warning: oklch(82% 0.14 85);
     --color-info: oklch(75% 0.13 245);
-    --color-chart: oklch(65% 0.17 256);
+    --color-chart: oklch(71% 0.18 46);
   }
+}
+
+:root[data-theme='dark'] {
+  --color-bg: oklch(13% 0.014 295);
+  --color-surface: oklch(18.5% 0.024 295);
+  --color-fg: oklch(96.5% 0.005 295);
+  --color-fg-muted: oklch(72% 0.02 295);
+  --color-border: oklch(31% 0.03 295);
+  --color-primary: oklch(71% 0.18 46);
+  --color-primary-fg: oklch(14% 0.02 295);
+  --color-brand: oklch(71% 0.18 46);
+  --color-danger: oklch(70% 0.18 18);
+  --color-success: oklch(72% 0.17 150);
+  --color-warning: oklch(82% 0.14 85);
+  --color-info: oklch(75% 0.13 245);
+  --color-chart: oklch(71% 0.18 46);
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
 }
 
 @layer base {
